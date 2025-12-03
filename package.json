@@ -6,8 +6,11 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-     "test": "NODE_ENV=test jest --coverage --detectOpenHandles --forceExit",
-    "test:watch": "NODE_ENV=test jest --watch"
+    "test": "NODE_ENV=test jest --coverage --detectOpenHandles --forceExit",
+    "test:unit": "NODE_ENV=test jest tests/tasks.test.js --coverage --detectOpenHandles --forceExit",
+    "test:integration": "NODE_ENV=test jest tests/integration --coverage --detectOpenHandles --forceExit",
+    "test:watch": "NODE_ENV=test jest --watch",
+    "test:all": "npm run test:unit && npm run test:integration"
   },
   "keywords": ["express", "postgresql", "redis", "rest-api"],
   "author": "",
@@ -33,6 +36,9 @@
     "forceExit": true,
     "clearMocks": true,
     "resetMocks": true,
-    "restoreMocks": true
+    "restoreMocks": true,
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
   }
 }

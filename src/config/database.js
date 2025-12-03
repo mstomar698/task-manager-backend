@@ -1,10 +1,10 @@
-// src/config/database.js
 const { Sequelize } = require('sequelize');
 const path = require('path');
-require('dotenv').config({ 
-  path: process.env.NODE_ENV === 'test' 
-    ? path.resolve(__dirname, '../../.env.test')
-    : path.resolve(__dirname, '../../.env')
+require('dotenv').config({
+  path:
+    process.env.NODE_ENV === 'test'
+      ? path.resolve(__dirname, '../../.env.test')
+      : path.resolve(__dirname, '../../.env'),
 });
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
@@ -14,16 +14,15 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
     max: 5,
     min: 0,
     acquire: 30000,
-    idle: 10000
-  }
+    idle: 10000,
+  },
 });
 
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
     console.log('PostgreSQL connected successfully');
-    
-    // In test environment, force sync to recreate tables
+
     if (process.env.NODE_ENV === 'test') {
       await sequelize.sync({ force: true });
       console.log('Test database synchronized (force)');

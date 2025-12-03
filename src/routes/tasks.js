@@ -4,9 +4,8 @@ const Task = require('../models/Task');
 const { redisClient } = require('../config/redis');
 
 const CACHE_KEY = 'tasks:all';
-const CACHE_TTL = 300; // 5 minutes
+const CACHE_TTL = 300;
 
-// Helper function to clear cache
 const clearCache = async () => {
   try {
     if (redisClient.isOpen) {
@@ -17,10 +16,8 @@ const clearCache = async () => {
   }
 };
 
-// GET all tasks
 router.get('/', async (req, res, next) => {
   try {
-    // Try to get from cache
     if (redisClient.isOpen) {
       const cached = await redisClient.get(CACHE_KEY);
       if (cached) {
@@ -28,12 +25,10 @@ router.get('/', async (req, res, next) => {
       }
     }
 
-    // Fetch from database
     const tasks = await Task.findAll({
-      order: [['createdAt', 'DESC']]
+      order: [['createdAt', 'DESC']],
     });
 
-    // Cache the result
     if (redisClient.isOpen) {
       await redisClient.setEx(CACHE_KEY, CACHE_TTL, JSON.stringify(tasks));
     }
@@ -44,11 +39,10 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// GET single task
 router.get('/:id', async (req, res, next) => {
   try {
     const task = await Task.findByPk(req.params.id);
-    
+
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
     }
@@ -59,7 +53,6 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-// POST create task
 router.post('/', async (req, res, next) => {
   try {
     const { title, description, status } = req.body;
@@ -71,7 +64,7 @@ router.post('/', async (req, res, next) => {
     const task = await Task.create({
       title: title.trim(),
       description: description?.trim() || '',
-      status: status || 'pending'
+      status: status || 'pending',
     });
 
     await clearCache();
@@ -81,7 +74,6 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-// PATCH update task
 router.patch('/:id', async (req, res, next) => {
   try {
     const task = await Task.findByPk(req.params.id);
@@ -91,7 +83,7 @@ router.patch('/:id', async (req, res, next) => {
     }
 
     const { title, description, status } = req.body;
-    
+
     if (title !== undefined) task.title = title.trim();
     if (description !== undefined) task.description = description.trim();
     if (status !== undefined) {
@@ -103,14 +95,13 @@ router.patch('/:id', async (req, res, next) => {
 
     await task.save();
     await clearCache();
-    
+
     res.json(task);
   } catch (error) {
     next(error);
   }
 });
 
-// DELETE task
 router.delete('/:id', async (req, res, next) => {
   try {
     const task = await Task.findByPk(req.params.id);
@@ -121,7 +112,7 @@ router.delete('/:id', async (req, res, next) => {
 
     await task.destroy();
     await clearCache();
-    
+
     res.json({ message: 'Task deleted successfully' });
   } catch (error) {
     next(error);

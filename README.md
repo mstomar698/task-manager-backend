@@ -81,7 +81,14 @@ npm start
 
 Run all tests with coverage:
 ```bash
+# Run tests
 npm test
+
+# Run unit tests only
+npm run test:unit
+
+# Run integration tests only
+npm run test:integration
 ```
 
 ### 📡 API Endpoints
@@ -160,7 +167,9 @@ backend/
 │   │   └── errorHandler.js  # Global error handler
 │   └── app.js               # Express app setup
 ├── tests/
-│   └── tasks.test.js        # Jest test suite
+│   ├── tasks.test.js              # Unit tests
+│   └── integration/
+│       └── tasks.integration.test.js  # Integration tests
 ├── .env                     # Environment variables
 ├── .env.example             # Environment template
 ├── docker-compose.yml       # Docker services
